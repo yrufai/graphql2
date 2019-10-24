@@ -2,7 +2,8 @@ import { GraphQLServer } from "graphql-yoga";
 
 const typeDefs = `
     type Query {
-      greeting(name: String!, status: String!): String!
+         greeting(name: String!, status: String!): String!
+        add(a: Float!, b: Float): Float!
         me: User!
         post: Post!
     }
@@ -29,6 +30,9 @@ const resolvers = {
       } else {
         return "Hello";
       }
+    },
+    add(parent, args, ctx, info) {
+      return args.a + args.b;
     },
     me() {
       return {
