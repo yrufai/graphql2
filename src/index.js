@@ -36,7 +36,7 @@ const resolvers = {
     },
     me() {
       return {
-        id: "23456897",
+        id: "23456897cdcd",
         name: "mr snaps",
         email: "yrufai23@gmail.com"
       };
@@ -46,7 +46,8 @@ const resolvers = {
         id: "987654321",
         title: "the Game of Thrones",
         body: "hey guys i hope all the kings and queens are doing well",
-        published: false
+        published: false,
+        sex: "Male"
       };
     }
   }
