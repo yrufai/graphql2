@@ -36,7 +36,7 @@ const resolvers = {
     },
     me() {
       return {
-        id: "52545",
+        id: "23456897",
         name: "mr snaps",
         email: "yrufai23@gmail.com"
       };
