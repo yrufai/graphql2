@@ -2,31 +2,32 @@ import { GraphQLServer } from "graphql-yoga";
 
 const typeDefs = `
     type Query {
-        id:ID!,
-        name: String!,
-        age: Int!,
-        employed: Boolean!,
-        gpa: Float
+        title: String!
+        price: Float!
+        releaseYear: Int
+        rating: Float
+        inStock: Boolean!
     }
 
+     
 `;
 
 const resolvers = {
   Query: {
-    id() {
-      return "abcd123";
+    title() {
+      return "the War of Art";
     },
-    name() {
-      return "Rufai";
+    price() {
+      return 12.99;
     },
-    age() {
-      return 58;
-    },
-    employed() {
-      return true;
-    },
-    gpa() {
+    releaseYear() {
       return null;
+    },
+    rating() {
+      return 5;
+    },
+    inStock() {
+      return true;
     }
   }
 };
@@ -37,5 +38,5 @@ const server = new GraphQLServer({
 });
 
 server.start(() => {
-  console.log("the server is up and doing");
+  console.log("we are live on port 4000");
 });
