@@ -2,7 +2,7 @@ import { GraphQLServer } from "graphql-yoga";
 
 const typeDefs = `
     type Query {
-         greeting(name: String!, status: String!): String!
+        greeting(name: String!, position: String!): String!
         add(a: Float!, b: Float): Float!
         me: User!
         post: Post!
@@ -18,6 +18,7 @@ const typeDefs = `
       title: String!
       body: String!
       published: Boolean!
+      sex: String!
     }
 
 `;
@@ -26,7 +27,7 @@ const resolvers = {
   Query: {
     greeting(parent, args, ctx, info) {
       if (args.name) {
-        return `Hello, ${args.name}, you are my dhopest ${args.status}`;
+        return `Hello, ${args.name}, you are my dhopest ${args.position}`;
       } else {
         return "Hello";
       }
