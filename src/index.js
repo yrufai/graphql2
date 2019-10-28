@@ -23,33 +23,54 @@ const users = [
 ];
 const posts = [
   {
-    id: 101,
+    id: "101",
     title: "game of thrones",
     body: "daring to play to game of thrones",
     published: true,
     author: "1"
   },
   {
-    id: 102,
+    id: "102",
     title: "Graphql 101",
     body: "This is how to use graphql",
     published: false,
     author: "1"
   },
   {
-    id: 103,
+    id: "103",
     title: "Graphql Basics",
     body: "This is an advance Graphql",
     published: true,
     author: "2"
   }
 ];
+
+const comments = [
+  {
+    id: "101",
+    body: "really, then its nice"
+  },
+  {
+    id: "102",
+    body: "really, then its nice"
+  },
+  {
+    id: "101",
+    body: "ok then i have to do this on my own"
+  },
+  {
+    id: "103",
+    body: "graphql is really fun to learn"
+  }
+];
 const typeDefs = `
     type Query {
         users(query:String): [User!]!
         posts(query: String): [Post!]!
+        comments: [Comment!]!
         me: User!
         post: Post!
+        comment: Comment!
     }
     type User{
       id:ID!
@@ -65,6 +86,11 @@ const typeDefs = `
       body: String!
       published: Boolean!
       author: User!
+      comments: [Comment]!
+    }
+    type Comment{
+      id: ID!
+      body: String!
     }
 
 `;
@@ -114,6 +140,11 @@ const resolvers = {
     author(parent, args, ctx, info) {
       return users.find(user => {
         return user.id;
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter(comment => {
+        return comment.id == parent.id;
       });
     }
   },
