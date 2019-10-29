@@ -48,19 +48,23 @@ const posts = [
 const comments = [
   {
     id: "101",
-    body: "really, then its nice"
+    body: "really, then its nice",
+    author: "1"
   },
   {
     id: "102",
-    body: "really, then its nice"
+    body: "really, then its nice",
+    author: "3"
   },
   {
     id: "101",
-    body: "ok then i have to do this on my own"
+    body: "ok then i have to do this on my own",
+    author: "2"
   },
   {
     id: "103",
-    body: "graphql is really fun to learn"
+    body: "graphql is really fun to learn",
+    author: "1"
   }
 ];
 const typeDefs = `
@@ -70,7 +74,6 @@ const typeDefs = `
         comments: [Comment!]!
         me: User!
         post: Post!
-        comment: Comment!
     }
     type User{
       id:ID!
@@ -79,6 +82,7 @@ const typeDefs = `
       age: Int
       sex: String!
       posts: [Post!]!
+      comments: [Comment!]!
     }
     type Post{
       id: ID!
@@ -86,11 +90,12 @@ const typeDefs = `
       body: String!
       published: Boolean!
       author: User!
-      comments: [Comment]!
+      comments: [Comment!]!
     }
     type Comment{
       id: ID!
       body: String!
+      author: User!
     }
 
 `;
@@ -126,6 +131,9 @@ const resolvers = {
         email: "yrufai23@gmail.com"
       };
     },
+    comments(parent, args, ctx, info) {
+      return comments;
+    },
     post() {
       return {
         id: "987654321",
@@ -152,6 +160,11 @@ const resolvers = {
     posts(parent, args, ctx, info) {
       return posts.filter(post => {
         return post.author == parent.id;
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter(comment => {
+        return comment.author == parent.id;
       });
     }
   }
