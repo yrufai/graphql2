@@ -78,7 +78,9 @@ const typeDefs = `
     }
 
     type Mutation{
-      createUser(name: String!, email: String!, age: Int, sex: String!): User!
+      createUser(name: String!, email: String!): User!
+      createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
+    
     }
 
     type User{
@@ -162,42 +164,55 @@ const resolvers = {
       const user = {
         id: uuid(),
         name: args.name,
-        email: args.email,
-        age: args.age,
-        sex: args.sex
+        email: args.email
       };
       users.push(user);
       return user;
+    },
+    createPost(parent, args, ctx, info) {
+      const userExist = users.some(user => user.id.toString() === args.author);
+      if (!userExist) {
+        throw new Error("User not Found");
+      }
+      const post = {
+        id: uuid,
+        title: args.title,
+        body: args.body,
+        published: args.published,
+        author: args.author
+      };
+      posts.push(post);
+      return post;
     }
   },
   Post: {
     author(parent, args, ctx, info) {
       return users.find(user => {
-        return user.id;
+        return user.id === parent.author;
       });
     },
     comments(parent, args, ctx, info) {
       return comments.filter(comment => {
-        return comment.id == parent.id;
+        return comment.id === parent.id;
       });
     }
   },
   User: {
     posts(parent, args, ctx, info) {
       return posts.filter(post => {
-        return post.author == parent.id;
+        return post.author === parent.id;
       });
     },
     comments(parent, args, ctx, info) {
       return comments.filter(comment => {
-        return comment.author == parent.id;
+        return comment.author === parent.id;
       });
     }
   },
   Comment: {
     author(parent, args, ctx, info) {
       return users.find(user => {
-        return user.id == parent.author;
+        return user.id === parent.author;
       });
     }
   }
