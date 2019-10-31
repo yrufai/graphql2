@@ -1,5 +1,5 @@
 import { GraphQLServer } from "graphql-yoga";
-import uuid from "uuid";
+import uuidv4 from "uuid/v4";
 
 const users = [
   {
@@ -78,11 +78,30 @@ const typeDefs = `
     }
 
     type Mutation{
-      createUser(name: String!, email: String!): User!
-      createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
-    
+      createUser(data: CreateUserInput): User!
+      createPost(data: CreatePostInput): Post!
+      createComment(data: CreateCommentInput): Comment!
     }
 
+    input CreateUserInput{
+      name: String!
+      email:String!
+      age: Int
+    }
+
+    input CreatePostInput{
+      title: String!
+      body: String!
+      published: Boolean!
+      author: ID!
+    }
+
+    input CreateCommentInput {
+      body: String!
+      author: ID!
+      post: ID!
+    }
+    
     type User{
       id:ID!
       name: String!
@@ -156,33 +175,46 @@ const resolvers = {
   Mutation: {
     createUser(parent, args, ctx, info) {
       const emailTaken = users.some(user => {
-        return user.email === args.email;
+        return user.email === args.data.email;
       });
       if (emailTaken) {
         throw new Error("Email already exist");
       }
       const user = {
-        id: uuid(),
-        name: args.name,
-        email: args.email
+        id: uuidv4(),
+        ...args.data
       };
       users.push(user);
       return user;
     },
     createPost(parent, args, ctx, info) {
-      const userExist = users.some(user => user.id.toString() === args.author);
+      const userExist = users.some(user => user.id === args.data.author);
       if (!userExist) {
         throw new Error("User not Found");
       }
       const post = {
-        id: uuid,
-        title: args.title,
-        body: args.body,
-        published: args.published,
-        author: args.author
+        id: uuidv4(),
+        ...args.data
       };
       posts.push(post);
       return post;
+    },
+    createComment(parent, args, ctx, info) {
+      const userExist = users.some(user => user.id === args.data.author);
+      const postExist = posts.some(
+        post => post.id === args.data.post && post.published
+      );
+      if (!userExist || !postExist) {
+        throw new Error("Unable ot find user or post");
+      }
+
+      const comment = {
+        id: uuidv4(),
+        ...args.data
+      };
+
+      comments.push(comment);
+      return comment;
     }
   },
   Post: {
