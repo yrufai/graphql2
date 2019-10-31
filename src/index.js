@@ -1,7 +1,7 @@
 import { GraphQLServer } from "graphql-yoga";
 import uuidv4 from "uuid/v4";
 
-const users = [
+let users = [
   {
     id: "1",
     name: "rufai",
@@ -22,7 +22,7 @@ const users = [
     sex: "famale"
   }
 ];
-const posts = [
+let posts = [
   {
     id: "101",
     title: "game of thrones",
@@ -46,7 +46,7 @@ const posts = [
   }
 ];
 
-const comments = [
+let comments = [
   {
     id: "101",
     body: "really, then its nice",
@@ -55,7 +55,7 @@ const comments = [
   {
     id: "102",
     body: "really, then its nice",
-    author: "3"
+    author: "1"
   },
   {
     id: "101",
@@ -79,7 +79,9 @@ const typeDefs = `
 
     type Mutation{
       createUser(data: CreateUserInput): User!
+      deleteUser(id: ID!): User!
       createPost(data: CreatePostInput): Post!
+      deletePost(id:ID!):Post!
       createComment(data: CreateCommentInput): Comment!
     }
 
@@ -187,6 +189,25 @@ const resolvers = {
       users.push(user);
       return user;
     },
+    deleteUser(parent, args, ctx, info) {
+      const userIndex = users.findIndex(user => user.id === args.id);
+
+      if (userIndex === -1) {
+        throw new Error("User not Found");
+      }
+      const deleteUsers = users.splice(userIndex, 1);
+      posts = posts.filter(post => {
+        const match = post.author === args.id;
+
+        if (match) {
+          comments = comments.filter(comment => comment.post !== post.id);
+        }
+        return !match;
+      });
+
+      comments = comments.filter(comment => comment.author !== args.id);
+      return deleteUsers[0];
+    },
     createPost(parent, args, ctx, info) {
       const userExist = users.some(user => user.id === args.data.author);
       if (!userExist) {
@@ -198,6 +219,15 @@ const resolvers = {
       };
       posts.push(post);
       return post;
+    },
+    deletePost(parent, args, ctx, info) {
+      const postIndex = posts.findIndex(post => post.id === args.id);
+      if (postIndex === -1) {
+        throw new Error("Post not Found");
+      }
+      const deletedPosts = posts.splice(postIndex, 1);
+      comments = comments.filter(comment => comment.post !== args.id);
+      return deletedPosts[0];
     },
     createComment(parent, args, ctx, info) {
       const userExist = users.some(user => user.id === args.data.author);
